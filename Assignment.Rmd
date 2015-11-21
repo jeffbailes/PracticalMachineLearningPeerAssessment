@@ -2,6 +2,8 @@
 title: "Predicting physical activity type using sensor data"
 output: html_document
 ---
+# Predicting physical activity type using sensor data
+
 The aim of this project is to train a machine learning algorithm which can be used to predict in what way someone is performing an activity by using sensor data.
 The participants do an activity in five different ways, labelled `A`, `B`, `C`, `D` and `E`, and corresponding sensor outputs are recorded.
 This document will go through the process of partitioning the data into a training and test set, ending with using the model to predict `20` techniques with unknown labels.
