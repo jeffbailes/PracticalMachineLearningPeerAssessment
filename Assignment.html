@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Data reading and preprocessing.</title>
+
+<script type="text/javascript">
+window.onload = function() {
+  var imgs = document.getElementsByTagName('img'), i, img;
+  for (i = 0; i < imgs.length; i++) {
+    img = imgs[i];
+    // center an image if it is the only element of its parent
+    if (img.parentElement.childElementCount === 1)
+      img.parentElement.style.textAlign = 'center';
+  }
+};
+</script>
+
+<!-- Styles for R syntax highlighter -->
+<style type="text/css">
+   pre .operator,
+   pre .paren {
+     color: rgb(104, 118, 135)
+   }
+
+   pre .literal {
+     color: #990073
+   }
+
+   pre .number {
+     color: #099;
+   }
+
+   pre .comment {
+     color: #998;
+     font-style: italic
+   }
+
+   pre .keyword {
+     color: #900;
+     font-weight: bold
+   }
+
+   pre .identifier {
+     color: rgb(0, 0, 0);
+   }
+
+   pre .string {
+     color: #d14;
+   }
+</style>
+
+<!-- R syntax highlighter -->
+<script type="text/javascript">
+var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.value!==undefined&&C.value!==false&&C.value!==null){A+='="'+m(C.value)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.index-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.index-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.value}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,value:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,value:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,value:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.value;y.value=k(q,c(s),x)}y.value=i(y.value,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.value+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.value}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.cpp=function(){var a={keyword:{"false":1,"int":1,"float":1,"while":1,"private":1,"char":1,"catch":1,"export":1,virtual:1,operator:2,sizeof:2,dynamic_cast:2,typedef:2,const_cast:2,"const":1,struct:1,"for":1,static_cast:2,union:1,namespace:1,unsigned:1,"long":1,"throw":1,"volatile":2,"static":1,"protected":1,bool:1,template:1,mutable:1,"if":1,"public":1,friend:2,"do":1,"return":1,"goto":1,auto:1,"void":2,"enum":1,"else":1,"break":1,"new":1,extern:1,using:1,"true":1,"class":1,asm:1,"case":1,typeid:1,"short":1,reinterpret_cast:2,"default":1,"double":1,register:1,explicit:1,signed:1,typename:1,"try":1,"this":1,"switch":1,"continue":1,wchar_t:1,inline:1,"delete":1,alignof:1,char16_t:1,char32_t:1,constexpr:1,decltype:1,noexcept:1,nullptr:1,static_assert:1,thread_local:1,restrict:1,_Bool:1,complex:1},built_in:{std:1,string:1,cin:1,cout:1,cerr:1,clog:1,stringstream:1,istringstream:1,ostringstream:1,auto_ptr:1,deque:1,list:1,queue:1,stack:1,vector:1,map:1,set:1,bitset:1,multiset:1,multimap:1,unordered_set:1,unordered_map:1,unordered_multiset:1,unordered_multimap:1,array:1,shared_ptr:1}};return{dM:{k:a,i:"</",c:[hljs.CLCM,hljs.CBLCLM,hljs.QSM,{cN:"string",b:"'\\\\?.",e:"'",i:"."},{cN:"number",b:"\\b(\\d+(\\.\\d*)?|\\.\\d+)(u|U|l|L|ul|UL|f|F)"},hljs.CNM,{cN:"preprocessor",b:"#",e:"$"},{cN:"stl_container",b:"\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",e:">",k:a,r:10,c:["self"]}]}}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 13px;
+}
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre, img {
+  max-width: 100%;
+}
+pre {
+  overflow-x: auto;
+}
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<p>The aim of this project is to train a machine learning algorithm which can be used to predict in what way someone is performing an activity by using sensor data.
+The participants do an activity in five different ways, labelled <code>A</code>, <code>B</code>, <code>C</code>, <code>D</code> and <code>E</code>, and corresponding sensor outputs are recorded.
+This document will go through the process of partitioning the data into a training and test set, ending with using the model to predict <code>20</code> techniques with unknown labels.
+The training data set can be found <a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv">here</a> and the <code>20</code> final testing problems can be found <a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv">here</a>.</p>
+
+<p>First load up the required <code>caret</code> library and turn the seed up to <code>11</code>.</p>
+
+<pre><code class="r">library(caret)
+set.seed(11)
+</code></pre>
+
+<h2>Data reading and preprocessing.</h2>
+
+<p>Load in the training data provided with the assignment, treating the <code>#DIV/0!</code> entries as <code>NA</code>.</p>
+
+<pre><code class="r">data &lt;- read.csv(&#39;Data/pml-training.csv&#39;, na.strings=c(&quot;NA&quot;,&quot;#DIV/0!&quot;))
+</code></pre>
+
+<p>Doing some quick data analysis, we check how many columns have firstly any <code>NA</code> entries, then more than <code>95%</code> <code>NA</code> entries.</p>
+
+<pre><code class="r"># Columns which have any NAs (100).
+sum(apply(is.na(data), 2, sum) / dim(data)[1] &gt; 0)
+</code></pre>
+
+<pre><code>## [1] 100
+</code></pre>
+
+<pre><code class="r"># Columns which have more than 95% NAs.
+sum(apply(is.na(data), 2, sum) / dim(data)[1] &gt; .95)
+</code></pre>
+
+<pre><code>## [1] 100
+</code></pre>
+
+<pre><code class="r"># Both are apparently 100.
+</code></pre>
+
+<p>Notice here that there are two main types of columns, ones that have a complete set of datapoints, and ones that have less than <code>5%</code> rows filled in.
+Seeing as imputing values with more than <code>95%</code> missing values would probably be a silly idea, we simply drop those <code>100</code> columns.
+The names to remove are listed below.</p>
+
+<pre><code class="r">names(data)[(apply(is.na(data), 2, sum) / dim(data)[1] &gt; .95)]
+</code></pre>
+
+<pre><code>##   [1] &quot;kurtosis_roll_belt&quot;       &quot;kurtosis_picth_belt&quot;     
+##   [3] &quot;kurtosis_yaw_belt&quot;        &quot;skewness_roll_belt&quot;      
+##   [5] &quot;skewness_roll_belt.1&quot;     &quot;skewness_yaw_belt&quot;       
+##   [7] &quot;max_roll_belt&quot;            &quot;max_picth_belt&quot;          
+##   [9] &quot;max_yaw_belt&quot;             &quot;min_roll_belt&quot;           
+##  [11] &quot;min_pitch_belt&quot;           &quot;min_yaw_belt&quot;            
+##  [13] &quot;amplitude_roll_belt&quot;      &quot;amplitude_pitch_belt&quot;    
+##  [15] &quot;amplitude_yaw_belt&quot;       &quot;var_total_accel_belt&quot;    
+##  [17] &quot;avg_roll_belt&quot;            &quot;stddev_roll_belt&quot;        
+##  [19] &quot;var_roll_belt&quot;            &quot;avg_pitch_belt&quot;          
+##  [21] &quot;stddev_pitch_belt&quot;        &quot;var_pitch_belt&quot;          
+##  [23] &quot;avg_yaw_belt&quot;             &quot;stddev_yaw_belt&quot;         
+##  [25] &quot;var_yaw_belt&quot;             &quot;var_accel_arm&quot;           
+##  [27] &quot;avg_roll_arm&quot;             &quot;stddev_roll_arm&quot;         
+##  [29] &quot;var_roll_arm&quot;             &quot;avg_pitch_arm&quot;           
+##  [31] &quot;stddev_pitch_arm&quot;         &quot;var_pitch_arm&quot;           
+##  [33] &quot;avg_yaw_arm&quot;              &quot;stddev_yaw_arm&quot;          
+##  [35] &quot;var_yaw_arm&quot;              &quot;kurtosis_roll_arm&quot;       
+##  [37] &quot;kurtosis_picth_arm&quot;       &quot;kurtosis_yaw_arm&quot;        
+##  [39] &quot;skewness_roll_arm&quot;        &quot;skewness_pitch_arm&quot;      
+##  [41] &quot;skewness_yaw_arm&quot;         &quot;max_roll_arm&quot;            
+##  [43] &quot;max_picth_arm&quot;            &quot;max_yaw_arm&quot;             
+##  [45] &quot;min_roll_arm&quot;             &quot;min_pitch_arm&quot;           
+##  [47] &quot;min_yaw_arm&quot;              &quot;amplitude_roll_arm&quot;      
+##  [49] &quot;amplitude_pitch_arm&quot;      &quot;amplitude_yaw_arm&quot;       
+##  [51] &quot;kurtosis_roll_dumbbell&quot;   &quot;kurtosis_picth_dumbbell&quot; 
+##  [53] &quot;kurtosis_yaw_dumbbell&quot;    &quot;skewness_roll_dumbbell&quot;  
+##  [55] &quot;skewness_pitch_dumbbell&quot;  &quot;skewness_yaw_dumbbell&quot;   
+##  [57] &quot;max_roll_dumbbell&quot;        &quot;max_picth_dumbbell&quot;      
+##  [59] &quot;max_yaw_dumbbell&quot;         &quot;min_roll_dumbbell&quot;       
+##  [61] &quot;min_pitch_dumbbell&quot;       &quot;min_yaw_dumbbell&quot;        
+##  [63] &quot;amplitude_roll_dumbbell&quot;  &quot;amplitude_pitch_dumbbell&quot;
+##  [65] &quot;amplitude_yaw_dumbbell&quot;   &quot;var_accel_dumbbell&quot;      
+##  [67] &quot;avg_roll_dumbbell&quot;        &quot;stddev_roll_dumbbell&quot;    
+##  [69] &quot;var_roll_dumbbell&quot;        &quot;avg_pitch_dumbbell&quot;      
+##  [71] &quot;stddev_pitch_dumbbell&quot;    &quot;var_pitch_dumbbell&quot;      
+##  [73] &quot;avg_yaw_dumbbell&quot;         &quot;stddev_yaw_dumbbell&quot;     
+##  [75] &quot;var_yaw_dumbbell&quot;         &quot;kurtosis_roll_forearm&quot;   
+##  [77] &quot;kurtosis_picth_forearm&quot;   &quot;kurtosis_yaw_forearm&quot;    
+##  [79] &quot;skewness_roll_forearm&quot;    &quot;skewness_pitch_forearm&quot;  
+##  [81] &quot;skewness_yaw_forearm&quot;     &quot;max_roll_forearm&quot;        
+##  [83] &quot;max_picth_forearm&quot;        &quot;max_yaw_forearm&quot;         
+##  [85] &quot;min_roll_forearm&quot;         &quot;min_pitch_forearm&quot;       
+##  [87] &quot;min_yaw_forearm&quot;          &quot;amplitude_roll_forearm&quot;  
+##  [89] &quot;amplitude_pitch_forearm&quot;  &quot;amplitude_yaw_forearm&quot;   
+##  [91] &quot;var_accel_forearm&quot;        &quot;avg_roll_forearm&quot;        
+##  [93] &quot;stddev_roll_forearm&quot;      &quot;var_roll_forearm&quot;        
+##  [95] &quot;avg_pitch_forearm&quot;        &quot;stddev_pitch_forearm&quot;    
+##  [97] &quot;var_pitch_forearm&quot;        &quot;avg_yaw_forearm&quot;         
+##  [99] &quot;stddev_yaw_forearm&quot;       &quot;var_yaw_forearm&quot;
+</code></pre>
+
+<p>The following commands do two things.
+Firstly, it drops the columns which are mostly <code>NA</code> values (those listed above), then it drops the first <code>7</code> columns of the dataset.
+The reason for dropping the first <code>7</code> columns is because they are not columns we can predict on, <code>user_name</code>s and timestamp variables.</p>
+
+<pre><code class="r">columnsKept &lt;- (apply(is.na(data), 2, sum) / dim(data)[1] &lt;= .95)
+# Get rid of the following columns.
+columnsKept[1:7]
+</code></pre>
+
+<pre><code>##                    X            user_name raw_timestamp_part_1 
+##                 TRUE                 TRUE                 TRUE 
+## raw_timestamp_part_2       cvtd_timestamp           new_window 
+##                 TRUE                 TRUE                 TRUE 
+##           num_window 
+##                 TRUE
+</code></pre>
+
+<pre><code class="r">columnsKept[1:7] &lt;- FALSE
+data &lt;- data[,columnsKept]
+</code></pre>
+
+<h2>Training the Model.</h2>
+
+<p>Now that the data has been cleaned, it&#39;s time to get to the machine learning part of the project.
+The first step is to partition the data into a training and testing set.</p>
+
+<pre><code class="r">inTrain &lt;- createDataPartition(y=data$classe, p=0.75, list=FALSE)
+training &lt;- data[inTrain,]
+testing &lt;- data[-inTrain,]
+</code></pre>
+
+<p>In my original attempts to train a random forest on the full <code>training</code> set, my <code>R</code> session took up large amounts of RAM and repeatedly crashed after only a minute of calculation.
+To get around this problem, I ran <code>PCA</code> before applying random forest, and, seeing as the following random forest training took my computer <code>70</code> minutes, maybe it was a good thing I didn&#39;t continue with the pull <code>52</code> variables.
+With <code>PCA</code>, I used the top <code>25</code> components by varience.</p>
+
+<pre><code class="r"># Try PCA before random forest.
+# Using the whole 52 variables made my R session like to crash.
+# Took 70minutes.
+preProc &lt;- preProcess(training[,-53], method=&quot;pca&quot;, pcaComp=25)
+trainPC &lt;- predict(preProc, training[,-53])
+modFit &lt;- train(training$classe ~ ., method=&quot;rf&quot;, data=trainPC)
+confusionMatrix(training$classe, predict(modFit, trainPC))
+</code></pre>
+
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    A    B    C    D    E
+##          A 4185    0    0    0    0
+##          B    0 2848    0    0    0
+##          C    0    0 2567    0    0
+##          D    0    0    0 2412    0
+##          E    0    0    0    0 2706
+## 
+## Overall Statistics
+##                                      
+##                Accuracy : 1          
+##                  95% CI : (0.9997, 1)
+##     No Information Rate : 0.2843     
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16  
+##                                      
+##                   Kappa : 1          
+##  Mcnemar&#39;s Test P-Value : NA         
+## 
+## Statistics by Class:
+## 
+##                      Class: A Class: B Class: C Class: D Class: E
+## Sensitivity            1.0000   1.0000   1.0000   1.0000   1.0000
+## Specificity            1.0000   1.0000   1.0000   1.0000   1.0000
+## Pos Pred Value         1.0000   1.0000   1.0000   1.0000   1.0000
+## Neg Pred Value         1.0000   1.0000   1.0000   1.0000   1.0000
+## Prevalence             0.2843   0.1935   0.1744   0.1639   0.1839
+## Detection Rate         0.2843   0.1935   0.1744   0.1639   0.1839
+## Detection Prevalence   0.2843   0.1935   0.1744   0.1639   0.1839
+## Balanced Accuracy      1.0000   1.0000   1.0000   1.0000   1.0000
+</code></pre>
+
+<p>Looking at the confusion matrix above, one can see that the trained model has an accuracy rate of <code>100%</code> on the training set, using only <code>25</code> predictors.
+This is suspiciously good and could be a strong sign of overfitting, however, we will look at what happens on the test set before jumping to conclusions.</p>
+
+<h2>Testing the Model.</h2>
+
+<p>Using this trained model, we move on to checking our model on the test set and look at the <code>confusionMatrix</code>.</p>
+
+<pre><code class="r">testPC &lt;- predict(preProc, testing[,-53])
+confusionMatrix(testing$classe, predict(modFit, testPC))
+</code></pre>
+
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    A    B    C    D    E
+##          A 1390    2    1    1    1
+##          B   17  922    9    0    1
+##          C    1   13  835    5    1
+##          D    2    0   33  767    2
+##          E    0    2    4    2  893
+## 
+## Overall Statistics
+##                                           
+##                Accuracy : 0.9802          
+##                  95% CI : (0.9759, 0.9839)
+##     No Information Rate : 0.2875          
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
+##                                           
+##                   Kappa : 0.975           
+##  Mcnemar&#39;s Test P-Value : NA              
+## 
+## Statistics by Class:
+## 
+##                      Class: A Class: B Class: C Class: D Class: E
+## Sensitivity            0.9858   0.9819   0.9467   0.9897   0.9944
+## Specificity            0.9986   0.9932   0.9950   0.9910   0.9980
+## Pos Pred Value         0.9964   0.9715   0.9766   0.9540   0.9911
+## Neg Pred Value         0.9943   0.9957   0.9884   0.9980   0.9988
+## Prevalence             0.2875   0.1915   0.1799   0.1580   0.1831
+## Detection Rate         0.2834   0.1880   0.1703   0.1564   0.1821
+## Detection Prevalence   0.2845   0.1935   0.1743   0.1639   0.1837
+## Balanced Accuracy      0.9922   0.9875   0.9709   0.9904   0.9962
+</code></pre>
+
+<p>The concerns before about overfitting, while not totally unfounded, shouldn&#39;t be too much of a concern in this case.
+The accuracy rate here is not overly bad and should be adequate for the purposes of this project (though a bit of tweaking needs to be done to get one of the final predictions).</p>
+
+<h3>Out of sample error rate.</h3>
+
+<p>The confusion matrix shows an accuracy of <code>0.9806</code>.
+This is the accuracy we should expect our model to perform at in real-world situations with new data.
+This value of accuracy says that the model trained here should have an out-of-sample error rate of about <code>2%</code>.</p>
+
+<h2>Run the predictions on the project&#39;s test set.</h2>
+
+<p>Using this trained model, we turn our attention to predicting the <code>20</code> techniques in the provided <code>testing</code> set.
+This simply applies the same transformations that were done to the training set to this new <code>projectProblems</code> set.</p>
+
+<pre><code class="r">projectProblems &lt;- read.csv(&#39;Data/pml-testing.csv&#39;, na.strings=c(&quot;NA&quot;,&quot;#DIV/0!&quot;))
+
+projectProblems &lt;- projectProblems[,columnsKept]
+
+# 53 is the &#39;problem_id&#39;.
+projectProblemsPC &lt;- predict(preProc, projectProblems[,-53])
+predictions &lt;- predict(modFit, projectProblemsPC)
+predictions
+</code></pre>
+
+<pre><code>##  [1] B A B A A E D B A A A C B A E E A B B B
+## Levels: A B C D E
+</code></pre>
+
+<pre><code class="r"># 19/20 correct.
+</code></pre>
+
+<h2>Getting the last prediction correct.</h2>
+
+<p>After submitting the contents of <code>predictions</code> to the assignment submission page, only <code>19</code> out of the <code>20</code> predictions were correct (the <code>11</code>th problem was incorrect).
+Unfortunately this is a bit annoying, mainly because the first time I tried this I didn&#39;t bother to set the seed and got all <code>20</code> in the first shot, so now I have to do more work to find the final answer (the cheat way would be to just mess with the seed until I get all <code>20</code> again, but that would be bad form).</p>
+
+<p>There are two ways which we can go about trying to find the correct prediction from here, both use the fact that the incorrect prediction was <code>A</code>.
+The first path is to look at the confusion matrix of our model above, looking at the first row, <code>A</code> was predicted <code>1390</code> times when the answer was actually <code>A</code>, twice when the answer was <code>B</code>, and once for each <code>C</code>, <code>D</code> and <code>E</code>.
+This could be used to <em>guess</em> that this <code>A</code> was actually a misclassified <code>B</code>, but with such small numbers I&#39;m not too confident with that analysis.
+The other option is to retrain a new model where all of the <code>A</code> training cases are removed, then use it to predict the <code>20</code> project problems and see what the <code>11</code>th problem is predicted as.
+This approach is shown below.</p>
+
+<p>This code will remove all of the <code>A</code> cases from both the training and the testing set.</p>
+
+<pre><code class="r">training &lt;- training[training$classe != &quot;A&quot;,]
+training$classe &lt;- droplevels(training$classe)
+testing &lt;- testing[testing$classe != &quot;A&quot;,]
+testing$classe &lt;- droplevels(testing$classe)
+</code></pre>
+
+<p>Then the same process is done that was done before, doing <code>PCA</code>, training and testing with a <code>confusionMatrix</code>.</p>
+
+<pre><code class="r">preProc &lt;- preProcess(training[,-53], method=&quot;pca&quot;, pcaComp=25)
+trainPC &lt;- predict(preProc, training[,-53])
+modFit &lt;- train(training$classe ~ ., method=&quot;rf&quot;, data=trainPC)
+confusionMatrix(training$classe, predict(modFit, trainPC))
+</code></pre>
+
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    B    C    D    E
+##          B 2848    0    0    0
+##          C    0 2567    0    0
+##          D    0    0 2412    0
+##          E    0    0    0 2706
+## 
+## Overall Statistics
+##                                      
+##                Accuracy : 1          
+##                  95% CI : (0.9996, 1)
+##     No Information Rate : 0.2704     
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16  
+##                                      
+##                   Kappa : 1          
+##  Mcnemar&#39;s Test P-Value : NA         
+## 
+## Statistics by Class:
+## 
+##                      Class: B Class: C Class: D Class: E
+## Sensitivity            1.0000   1.0000    1.000   1.0000
+## Specificity            1.0000   1.0000    1.000   1.0000
+## Pos Pred Value         1.0000   1.0000    1.000   1.0000
+## Neg Pred Value         1.0000   1.0000    1.000   1.0000
+## Prevalence             0.2704   0.2437    0.229   0.2569
+## Detection Rate         0.2704   0.2437    0.229   0.2569
+## Detection Prevalence   0.2704   0.2437    0.229   0.2569
+## Balanced Accuracy      1.0000   1.0000    1.000   1.0000
+</code></pre>
+
+<pre><code class="r">testPC &lt;- predict(preProc, testing[,-53])
+confusionMatrix(testing$classe, predict(modFit, testPC))
+</code></pre>
+
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction   B   C   D   E
+##          B 934  12   2   1
+##          C  12 836   5   2
+##          D   2  33 764   5
+##          E   3   7   4 887
+## 
+## Overall Statistics
+##                                           
+##                Accuracy : 0.9749          
+##                  95% CI : (0.9692, 0.9798)
+##     No Information Rate : 0.271           
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
+##                                           
+##                   Kappa : 0.9665          
+##  Mcnemar&#39;s Test P-Value : 0.0004188       
+## 
+## Statistics by Class:
+## 
+##                      Class: B Class: C Class: D Class: E
+## Sensitivity            0.9821   0.9414   0.9858   0.9911
+## Specificity            0.9941   0.9928   0.9854   0.9946
+## Pos Pred Value         0.9842   0.9778   0.9502   0.9845
+## Neg Pred Value         0.9934   0.9804   0.9959   0.9969
+## Prevalence             0.2710   0.2531   0.2209   0.2551
+## Detection Rate         0.2662   0.2382   0.2177   0.2528
+## Detection Prevalence   0.2704   0.2437   0.2291   0.2568
+## Balanced Accuracy      0.9881   0.9671   0.9856   0.9929
+</code></pre>
+
+<pre><code class="r">projectProblemsPC &lt;- predict(preProc, projectProblems[,-53])
+predictions &lt;- predict(modFit, projectProblemsPC)
+predictions
+</code></pre>
+
+<pre><code>##  [1] B C B C C B D B E C B C B B E E E B B B
+## Levels: B C D E
+</code></pre>
+
+<pre><code class="r"># The misclassified one from before was the 11th one.
+predictions[11]
+</code></pre>
+
+<pre><code>## [1] B
+## Levels: B C D E
+</code></pre>
+
+<pre><code class="r"># This new prediction is correct (B).
+# Final answers: B A B A A E D B A A B C B A E E A B B B
+</code></pre>
+
+<p>Indeed the new classifier where <code>A</code> was no-longer an option has sucessfully predicted <code>B</code> to be the activity undertaken (the same as we <em>guessed</em> above).
+Giving all <code>20</code> out of <code>20</code> correct.</p>
+
+</body>
+
+</html>

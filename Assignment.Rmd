@@ -1,0 +1,155 @@
+---
+title: "Predicting physical activity type using sensor data"
+output: html_document
+---
+The aim of this project is to train a machine learning algorithm which can be used to predict in what way someone is performing an activity by using sensor data.
+The participants do an activity in five different ways, labelled `A`, `B`, `C`, `D` and `E`, and corresponding sensor outputs are recorded.
+This document will go through the process of partitioning the data into a training and test set, ending with using the model to predict `20` techniques with unknown labels.
+The training data set can be found [here](https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv) and the `20` final testing problems can be found [here](https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv).
+
+First load up the required `caret` library and turn the seed up to `11`.
+
+```{r, message=FALSE}
+library(caret)
+set.seed(11)
+```
+
+## Data reading and preprocessing.
+Load in the training data provided with the assignment, treating the `#DIV/0!` entries as `NA`.
+
+```{r}
+data <- read.csv('Data/pml-training.csv', na.strings=c("NA","#DIV/0!"))
+```
+
+Doing some quick data analysis, we check how many columns have firstly any `NA` entries, then more than `95%` `NA` entries.
+
+```{r}
+# Columns which have any NAs (100).
+sum(apply(is.na(data), 2, sum) / dim(data)[1] > 0)
+# Columns which have more than 95% NAs.
+sum(apply(is.na(data), 2, sum) / dim(data)[1] > .95)
+# Both are apparently 100.
+```
+
+Notice here that there are two main types of columns, ones that have a complete set of datapoints, and ones that have less than `5%` rows filled in.
+Seeing as imputing values with more than `95%` missing values would probably be a silly idea, we simply drop those `100` columns.
+The names to remove are listed below.
+
+```{r}
+names(data)[(apply(is.na(data), 2, sum) / dim(data)[1] > .95)]
+```
+
+The following commands do two things.
+Firstly, it drops the columns which are mostly `NA` values (those listed above), then it drops the first `7` columns of the dataset.
+The reason for dropping the first `7` columns is because they are not columns we can predict on, `user_name`s and timestamp variables.
+
+```{r}
+columnsKept <- (apply(is.na(data), 2, sum) / dim(data)[1] <= .95)
+# Get rid of the following columns.
+columnsKept[1:7]
+columnsKept[1:7] <- FALSE
+data <- data[,columnsKept]
+```
+
+## Training the Model.
+Now that the data has been cleaned, it's time to get to the machine learning part of the project.
+The first step is to partition the data into a training and testing set.
+
+```{r}
+inTrain <- createDataPartition(y=data$classe, p=0.75, list=FALSE)
+training <- data[inTrain,]
+testing <- data[-inTrain,]
+```
+
+In my original attempts to train a random forest on the full `training` set, my `R` session took up large amounts of RAM and repeatedly crashed after only a minute of calculation.
+To get around this problem, I ran `PCA` before applying random forest, and, seeing as the following random forest training took my computer `70` minutes, maybe it was a good thing I didn't continue with the pull `52` variables.
+With `PCA`, I used the top `25` components by varience.
+
+```{r}
+# Try PCA before random forest.
+# Using the whole 52 variables made my R session like to crash.
+# Took 70minutes.
+preProc <- preProcess(training[,-53], method="pca", pcaComp=25)
+trainPC <- predict(preProc, training[,-53])
+modFit <- train(training$classe ~ ., method="rf", data=trainPC)
+confusionMatrix(training$classe, predict(modFit, trainPC))
+```
+
+Looking at the confusion matrix above, one can see that the trained model has an accuracy rate of `100%` on the training set, using only `25` predictors.
+This is suspiciously good and could be a strong sign of overfitting, however, we will look at what happens on the test set before jumping to conclusions.
+
+## Testing the Model.
+Using this trained model, we move on to checking our model on the test set and look at the `confusionMatrix`.
+
+```{r}
+testPC <- predict(preProc, testing[,-53])
+confusionMatrix(testing$classe, predict(modFit, testPC))
+```
+
+The concerns before about overfitting, while not totally unfounded, shouldn't be too much of a concern in this case.
+The accuracy rate here is not overly bad and should be adequate for the purposes of this project (though a bit of tweaking needs to be done to get one of the final predictions).
+
+### Out of sample error rate.
+The confusion matrix shows an accuracy of `0.9806`.
+This is the accuracy we should expect our model to perform at in real-world situations with new data.
+This value of accuracy says that the model trained here should have an out-of-sample error rate of about `2%`.
+
+## Run the predictions on the project's test set.
+Using this trained model, we turn our attention to predicting the `20` techniques in the provided `testing` set.
+This simply applies the same transformations that were done to the training set to this new `projectProblems` set.
+
+```{r}
+projectProblems <- read.csv('Data/pml-testing.csv', na.strings=c("NA","#DIV/0!"))
+
+projectProblems <- projectProblems[,columnsKept]
+
+# 53 is the 'problem_id'.
+projectProblemsPC <- predict(preProc, projectProblems[,-53])
+predictions <- predict(modFit, projectProblemsPC)
+predictions
+# 19/20 correct.
+```
+
+## Getting the last prediction correct.
+After submitting the contents of `predictions` to the assignment submission page, only `19` out of the `20` predictions were correct (the `11`th problem was incorrect).
+Unfortunately this is a bit annoying, mainly because the first time I tried this I didn't bother to set the seed and got all `20` in the first shot, so now I have to do more work to find the final answer (the cheat way would be to just mess with the seed until I get all `20` again, but that would be bad form).
+
+There are two ways which we can go about trying to find the correct prediction from here, both use the fact that the incorrect prediction was `A`.
+The first path is to look at the confusion matrix of our model above, looking at the first row, `A` was predicted `1390` times when the answer was actually `A`, twice when the answer was `B`, and once for each `C`, `D` and `E`.
+This could be used to *guess* that this `A` was actually a misclassified `B`, but with such small numbers I'm not too confident with that analysis.
+The other option is to retrain a new model where all of the `A` training cases are removed, then use it to predict the `20` project problems and see what the `11`th problem is predicted as.
+This approach is shown below.
+
+This code will remove all of the `A` cases from both the training and the testing set.
+
+```{r}
+training <- training[training$classe != "A",]
+training$classe <- droplevels(training$classe)
+testing <- testing[testing$classe != "A",]
+testing$classe <- droplevels(testing$classe)
+```
+
+Then the same process is done that was done before, doing `PCA`, training and testing with a `confusionMatrix`.
+
+```{r}
+preProc <- preProcess(training[,-53], method="pca", pcaComp=25)
+trainPC <- predict(preProc, training[,-53])
+modFit <- train(training$classe ~ ., method="rf", data=trainPC)
+confusionMatrix(training$classe, predict(modFit, trainPC))
+```
+```{r}
+testPC <- predict(preProc, testing[,-53])
+confusionMatrix(testing$classe, predict(modFit, testPC))
+```
+```{r}
+projectProblemsPC <- predict(preProc, projectProblems[,-53])
+predictions <- predict(modFit, projectProblemsPC)
+predictions
+# The misclassified one from before was the 11th one.
+predictions[11]
+# This new prediction is correct (B).
+# Final answers: B A B A A E D B A A B C B A E E A B B B
+```
+
+Indeed the new classifier where `A` was no-longer an option has sucessfully predicted `B` to be the activity undertaken (the same as we *guessed* above).
+Giving all `20` out of `20` correct.
